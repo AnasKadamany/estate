@@ -3,7 +3,7 @@ import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import apiRequest from "../../lib/apiRequest";
 import "./profilePage.scss";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 function ProfilePage() {
@@ -19,8 +19,9 @@ function ProfilePage() {
       console.log(err)
     }
   }
+
   return (
-    <div className="profilePage">
+     <div className="profilePage">
       <div className="details">
         <div className="wrapper">
           <div className="title">
