@@ -43,7 +43,8 @@ export const updateUser = async (req, res) => {
       where: { id: id },
       data: updatedData,
     });
-    res.status(200).json(updatedUser);
+    const { password: pass, ...rest } = updatedUser;
+    res.status(200).json(rest);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Faild to update User!" });
