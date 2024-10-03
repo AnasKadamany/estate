@@ -21,6 +21,10 @@ function ProfilePage() {
     }
   }
 
+  const navigateToAddPost = () => {
+    navigator("/add");
+  };
+
   return (
      <div className="profilePage">
       <div className="details">
@@ -49,7 +53,7 @@ function ProfilePage() {
           </div>
           <div className="title">
             <h1>My List</h1>
-            <button>Create New Post</button>
+            <button onClick={navigateToAddPost}>Create New Post</button>
           </div>
           <List />
           <div className="title">

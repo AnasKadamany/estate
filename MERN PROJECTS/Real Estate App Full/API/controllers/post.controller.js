@@ -13,7 +13,10 @@ export const getPost = async (req, res, next) => {
   const id = req.params.id;
   console.log(req.params);
   try {
-    const posts = await prisma.post.findUnique({ where: { id: id } });
+    const posts = await prisma.post.findUnique({
+      where: { id: id },
+      include: { user: true, PostDetail: true },
+    });
     res.status(200).json(posts);
   } catch (err) {
     console.log(err);
@@ -22,23 +25,29 @@ export const getPost = async (req, res, next) => {
 };
 
 export const addPost = async (req, res, next) => {
-  const body = req.body;
+  const { postData, PostDetail } = req.body;
   const userTokenId = req.userId;
+
   try {
     const post = await prisma.post.create({
       data: {
-        ...body.postData,
+        ...postData,
         userId: userTokenId,
-        PostDetail: { ...body.postDetail },
+        PostDetail: {
+          create: PostDetail, // Ensure you're using 'create' for nested writes
+        },
       },
+      include: {
+        user: { select: { username: true, avatar: true } },
+        PostDetail: true,
+      }, // Include related fields in the response
     });
     res.status(200).json(post);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Failed to Get Posts" });
+    res.status(500).json({ message: "Failed to Create Post" });
   }
 };
-
 export const updatePost = async (req, res, next) => {
   try {
     res.status(200).json();
