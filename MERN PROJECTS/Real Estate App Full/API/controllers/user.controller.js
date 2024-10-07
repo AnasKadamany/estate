@@ -33,7 +33,6 @@ export const updateUser = async (req, res) => {
   try {
     let updatedPassword = null;
     let updatedData = { ...inputs };
-    console.log(updatedData);
     if (password) {
       updatedPassword = await hash(password, 10);
       updatedData.password = updatedPassword;
