@@ -1,32 +1,29 @@
-import { Link, useNavigate } from "react-router-dom";
 import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
-import apiRequest from "../../lib/apiRequest";
 import "./profilePage.scss";
-import { useContext, useEffect } from "react";
+import apiRequest from "../../lib/apiRequest";
+import { Await, Link, useLoaderData, useNavigate } from "react-router-dom";
+import { Suspense, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import ProfileUpdatePage from "../profileUpdatePage/profileUpdatePage";
 
 function ProfilePage() {
-  const navigator=useNavigate()
-  const {currentUser,updateUser}=useContext(AuthContext)
-  const handleLogOut= ()=>{
-    try{
-      apiRequest.post("/auth/logout")
-      updateUser(null)
-      navigator("/")
-    }
-    catch(err){
-      console.log(err)
-    }
-  }
+  const data = useLoaderData();
 
-  const navigateToAddPost = () => {
-    navigator("/add");
+  const { updateUser, currentUser } = useContext(AuthContext);
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest.post("/auth/logout");
+      updateUser(null);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
   };
-
   return (
-     <div className="profilePage">
+    <div className="profilePage">
       <div className="details">
         <div className="wrapper">
           <div className="title">
@@ -38,10 +35,7 @@ function ProfilePage() {
           <div className="info">
             <span>
               Avatar:
-              <img
-                src={currentUser.avatar||"noavatar.jpg"}
-                alt=""
-              />
+              <img src={currentUser.avatar || "noavatar.jpg"} alt="" />
             </span>
             <span>
               Username: <b>{currentUser.username}</b>
@@ -49,22 +43,45 @@ function ProfilePage() {
             <span>
               E-mail: <b>{currentUser.email}</b>
             </span>
-            <button onClick={handleLogOut}>LogOut</button>
+            <button onClick={handleLogout}>Logout</button>
           </div>
           <div className="title">
             <h1>My List</h1>
-            <button onClick={navigateToAddPost}>Create New Post</button>
+            <Link to="/add">
+              <button>Create New Post</button>
+            </Link>
           </div>
-          <List />
+          <Suspense fallback={<p>Loading...</p>}>
+            <Await
+              resolve={data.postResponse}
+              errorElement={<p>Error loading posts!</p>}
+            >
+              {(postResponse) => <List posts={postResponse.data.userPosts} />}
+            </Await>
+          </Suspense>
           <div className="title">
             <h1>Saved List</h1>
           </div>
-          <List />
+          <Suspense fallback={<p>Loading...</p>}>
+            <Await
+              resolve={data.postResponse}
+              errorElement={<p>Error loading posts!</p>}
+            >
+              {(postResponse) => postResponse?.data ? <List posts={postResponse.data.userPosts} /> : <p>No posts found.</p>}
+            </Await>
+          </Suspense>
         </div>
       </div>
       <div className="chatContainer">
         <div className="wrapper">
-          <Chat/>
+          <Suspense fallback={<p>Loading...</p>}>
+            <Await
+              resolve={data.chatResponse}
+              errorElement={<p>Error loading chats!</p>}
+            >
+              {(chatResponse) => chatResponse?.data ? <Chat chats={chatResponse.data} /> : <p>No chats available.</p>}
+            </Await>  
+          </Suspense>
         </div>
       </div>
     </div>
