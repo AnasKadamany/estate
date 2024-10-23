@@ -67,7 +67,7 @@ function ProfilePage() {
               resolve={data.postResponse}
               errorElement={<p>Error loading posts!</p>}
             >
-              {(postResponse) => postResponse?.data ? <List posts={postResponse.data.userPosts} /> : <p>No posts found.</p>}
+              {(postResponse) => <List posts={postResponse.data.savedPosts} />}
             </Await>
           </Suspense>
         </div>
@@ -79,8 +79,8 @@ function ProfilePage() {
               resolve={data.chatResponse}
               errorElement={<p>Error loading chats!</p>}
             >
-              {(chatResponse) => chatResponse?.data ? <Chat chats={chatResponse.data} /> : <p>No chats available.</p>}
-            </Await>  
+              {(chatResponse) => <Chat chats={chatResponse.data}/>}
+            </Await>
           </Suspense>
         </div>
       </div>

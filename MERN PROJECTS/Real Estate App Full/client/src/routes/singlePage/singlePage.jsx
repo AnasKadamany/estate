@@ -19,7 +19,7 @@ function SinglePage() {
     }
     setSaved((prev) => !prev);
     try {
-      await apiRequest.post("/users/save", { postId: post.id },{withCredentials:true});
+      await apiRequest.post("/users/save", { postId: post.id });
     } catch (err) {
       console.log(err);
       setSaved((prev) => !prev);

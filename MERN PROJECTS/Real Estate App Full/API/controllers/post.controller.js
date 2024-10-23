@@ -46,24 +46,30 @@ export const getPost = async (req, res) => {
     const token = req.cookies?.token;
 
     if (token) {
-      jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
-        if (!err) {
-          const saved = await prisma.savedPost.findUnique({
-            where: {
-              userId_postId: {
-                postId: id,
-                userId: payload.id,
+      return jwt.verify(
+        token,
+        process.env.JWT_SECRET_KEY,
+        async (err, payload) => {
+          if (!err) {
+            const saved = await prisma.savedPost.findUnique({
+              where: {
+                userId_postId: {
+                  postId: id,
+                  userId: payload.id,
+                },
               },
-            },
-          });
-          res.status(200).json({ ...post, isSaved: saved ? true : false });
+            });
+            return res
+              .status(200)
+              .json({ ...post, isSaved: saved ? true : false });
+          }
         }
-      });
+      );
     }
-    res.status(200).json({ ...post, isSaved: false });
+    return res.status(200).json({ ...post, isSaved: false });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Failed to get post" });
+    return res.status(500).json({ message: "Failed to get post" });
   }
 };
 
@@ -89,11 +95,28 @@ export const addPost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
+  const id = req.params.id;
+  const tokenUserId = req.userId;
+  const body = req.body;
+
   try {
-    res.status(200).json();
+    const post = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (post.userId !== tokenUserId) {
+      return res.status(403).json({ message: "Not Authorized!" });
+    }
+
+    const updatedPost = await prisma.post.update({
+      where: { id },
+      data: { ...body },
+    });
+
+    res.status(200).json(updatedPost);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Failed to update posts" });
+    res.status(500).json({ message: "Failed to update post" });
   }
 };
 
