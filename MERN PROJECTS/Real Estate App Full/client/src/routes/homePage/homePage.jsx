@@ -2,10 +2,25 @@ import { useContext } from "react";
 import SearchBar from "../../components/searchBar/SearchBar";
 import "./homePage.scss";
 import { AuthContext } from "../../context/AuthContext";
+import { useSpring, animated } from "react-spring";
 
 function HomePage() {
+  const { currentUser } = useContext(AuthContext);
 
-  const {currentUser} = useContext(AuthContext)
+  // Component to animate numbers
+  const AnimatedNumber = ({ target }) => {
+    const { number } = useSpring({
+      from: { number: 0 },
+      to: { number: target },
+      config: { duration: 2000 },
+    });
+
+    return (
+      <animated.h1>
+        {number.to((n) => `${Math.floor(n)}+`)}
+      </animated.h1>
+    );
+  };
 
   return (
     <div className="homePage">
@@ -21,15 +36,15 @@ function HomePage() {
           <SearchBar />
           <div className="boxes">
             <div className="box">
-              <h1>16+</h1>
+              <AnimatedNumber target={16} />
               <h2>Years of Experience</h2>
             </div>
             <div className="box">
-              <h1>200</h1>
+            <AnimatedNumber target={200} />
               <h2>Award Gained</h2>
             </div>
             <div className="box">
-              <h1>2000+</h1>
+            <AnimatedNumber target={2000} />
               <h2>Property Ready</h2>
             </div>
           </div>

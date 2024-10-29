@@ -8,7 +8,7 @@ import {
 import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
-
+("/api/chat/");
 router.get("/", verifyToken, getChats);
 router.get("/:id", verifyToken, getChat);
 router.post("/", verifyToken, addChat);

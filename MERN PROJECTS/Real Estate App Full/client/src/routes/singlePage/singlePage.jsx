@@ -9,6 +9,7 @@ import apiRequest from "../../lib/apiRequest";
 
 function SinglePage() {
   const post = useLoaderData();
+  console.log(post.userId)
   const [saved, setSaved] = useState(post.isSaved);
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -25,6 +26,23 @@ function SinglePage() {
       setSaved((prev) => !prev);
     }
   };
+
+  const handleSend = async () => {
+  if (!currentUser) {
+    navigate("/login");
+    return;
+  }
+
+  try {
+    const response =await apiRequest.post("/chats", { receiverId: post.userId });
+    console.log("Chat created:", response.data); // Confirm chat creation
+    navigate(`/profile`); // Redirect to chat page
+  } catch (err) {
+    console.log("Error creating chat:", err);
+    // Optionally, show a user-friendly error message here
+  }
+};
+
 
   return (
     <div className="singlePage">
@@ -138,7 +156,7 @@ function SinglePage() {
             <Map items={[post]} />
           </div>
           <div className="buttons">
-            <button>
+            <button onClick={handleSend}>
               <img src="/chat.png" alt="" />
               Send a Message
             </button>
