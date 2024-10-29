@@ -1,0 +1,29 @@
+# Use an official Node.js runtime as a base image
+FROM node:16
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json to install dependencies
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy Prisma schema file
+COPY prisma ./prisma
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Rebuild bcrypt for Linux environment
+RUN npm rebuild bcrypt --build-from-source
+
+# Copy the rest of your application code
+COPY . .
+
+# Expose the app's port (Cloud Run will handle the actual PORT environment variable)
+EXPOSE 8080
+
+# Start the application
+CMD ["node", "app.js"]
